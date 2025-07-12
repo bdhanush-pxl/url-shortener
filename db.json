@@ -1,0 +1,25 @@
+{
+  "urls": [
+    {
+      "id": "ffaDzMoyc",
+      "fullUrl": "https://example.com/this-is-a-very-long-url-with-many-parameters?param1=value1&param2=value2&source=test&campaign=summer",
+      "shortUrl": "1UgDFjaKa0",
+      "clicks": 0,
+      "createdAt": "2025-07-12T11:33:49.179Z"
+    },
+    {
+      "id": "M9zsGty9W",
+      "fullUrl": "https://www.github.com/yourusername/your-repo-name/pull/1234/files#diff-1234567890abcdef1234567890abcdef",
+      "shortUrl": "2TG4qT3fDj",
+      "clicks": 0,
+      "createdAt": "2025-07-12T11:41:04.920Z"
+    },
+    {
+      "id": "4CwIhoQ-x",
+      "fullUrl": "https://www.amazon.com/Example-Product-Name-Details-Here/dp/B08N5KWB9H/ref=sr_1_1?keywords=example&qid=1234567890&sr=8-1",
+      "shortUrl": "YR47iQGETZ",
+      "clicks": 0,
+      "createdAt": "2025-07-12T11:41:46.364Z"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: url-shortener
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        fromDatabase:
+          name: mongodb
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: BASE_URL
+        generateValue: true
+        pattern: https://{{.Service.Name}}.{{.Environments[0].Name}}.onrender.com
+    plan: free
+    autoDeploy: true

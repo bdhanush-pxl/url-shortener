@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center mb-6 text-blue-600">URL Shortener</h1>
+        
+        <form id="urlForm" class="mb-6">
+            <div class="flex flex-col space-y-4">
+                <input 
+                    type="url" 
+                    id="longUrl" 
+                    name="longUrl"
+                    placeholder="Enter your long URL" 
+                    class="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                >
+                <button 
+                    type="submit" 
+                    class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition-colors"
+                    id="submitBtn"
+                >
+                    Shorten URL
+                </button>
+            </div>
+        </form>
+
+        <div id="result" class="hidden">
+            <p class="mb-2 text-gray-700">Your shortened URL:</p>
+            <div class="flex items-center">
+                <input 
+                    type="text" 
+                    id="shortUrl" 
+                    readonly 
+                    class="flex-1 px-4 py-2 border rounded-l focus:outline-none"
+                >
+                <button 
+                    onclick="copyToClipboard()" 
+                    class="bg-gray-200 px-4 py-2 rounded-r hover:bg-gray-300 transition-colors"
+                >
+                    Copy
+                </button>
+            </div>
+            <p class="mt-2 text-sm text-gray-500">
+                <span id="clickCount">0</span> clicks so far
+            </p>
+        </div>
+        
+        <div id="error" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('urlForm');
+        const resultDiv = document.getElementById('result');
+        const shortUrlInput = document.getElementById('shortUrl');
+        const clickCountSpan = document.getElementById('clickCount');
+        const errorDiv = document.getElementById('error');
+        const submitBtn = document.getElementById('submitBtn');
+        const baseUrl = window.location.origin;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const longUrl = document.getElementById('longUrl').value;
+            
+            // Reset UI
+            errorDiv.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Shortening...';
+            
+            try {
+                const response = await fetch('/api/url/shorten', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ longUrl })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Show success result
+                    const url = data.data;
+                    shortUrlInput.value = url.shortUrl;
+                    clickCountSpan.textContent = url.clicks || 0;
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    // Show error
+                    showError(data.message || 'Failed to shorten URL');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                showError('Failed to connect to the server');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Shorten URL';
+            }
+        });
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function copyToClipboard() {
+            shortUrlInput.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const copyBtn = document.querySelector('button[onclick="copyToClipboard()"]');
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            copyBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            copyBtn.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+            
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                copyBtn.classList.add('bg-gray-200', 'hover:bg-gray-300');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
